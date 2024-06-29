@@ -22,14 +22,6 @@ public class ReportServiceImpl implements ReportService {
 
     public Long initiateReportGeneration(ReportRequestDto reportDto) {
 
-//        String randomString = generateRandomString();
-//        Report report = new Report();
-//        report.setStartDate(startDate);
-//        report.setEndDate(endDate);
-//        report.setStatus("in progress");
-//        report.setRandomString(randomString);
-        System.out.println("inside initiateReportGeneration ");
-
         Report report =modelMapper.map(reportDto,Report.class);
         report = reportRepository.save(report);
         simulateReportGeneration(report);
@@ -37,6 +29,10 @@ public class ReportServiceImpl implements ReportService {
         ReportResponseDto reportResponseDto =modelMapper.map(report,ReportResponseDto.class);
         System.out.println("report "+report);
         return reportResponseDto.getId();
+    }
+
+    public Report getReportStatus(Long reportId) {
+        return reportRepository.findById(reportId).orElse(null);
     }
 
     private void simulateReportGeneration(Report report) {
