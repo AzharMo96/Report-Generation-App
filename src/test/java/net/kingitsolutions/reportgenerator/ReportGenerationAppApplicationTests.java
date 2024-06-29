@@ -1,4 +1,4 @@
-package net.kingitsolutions.reportGenerationApp;
+package net.kingitsolutions.reportgenerator;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

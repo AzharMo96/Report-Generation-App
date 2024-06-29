@@ -1,4 +1,4 @@
-package net.kingitsolutions.reportGenerationApp;
+package net.kingitsolutions.reportgenerator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
