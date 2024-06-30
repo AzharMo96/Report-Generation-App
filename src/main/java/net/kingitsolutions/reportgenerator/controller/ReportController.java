@@ -1,8 +1,7 @@
-package net.kingitsolutions.reportgenerator.constroller;
+package net.kingitsolutions.reportgenerator.controller;
 
 import net.kingitsolutions.reportgenerator.dto.request.ReportRequestDto;
 import net.kingitsolutions.reportgenerator.dto.response.ReportResponseDto;
-import net.kingitsolutions.reportgenerator.entity.Report;
 import net.kingitsolutions.reportgenerator.service.ReportService;
 import net.kingitsolutions.reportgenerator.service.util.Support;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -67,19 +64,18 @@ public class ReportController {
 
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadReport(@RequestParam("id") Long reportId) {
-        System.out.println("inside downlord report");
+
         ReportResponseDto report = reportService.getReportStatus(reportId);
         if (report == null || !report.getStatus().equals("finished")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        System.out.println("inside content");
         String content = Support.generateReportContent(report);
         ByteArrayResource resource = new ByteArrayResource(content.getBytes());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_" + reportId + ".txt");
         headers.add(HttpHeaders.CONTENT_TYPE, "text/plain");
-        System.out.println("before return");
+
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentLength(resource.contentLength())

@@ -3,6 +3,7 @@ package net.kingitsolutions.reportgenerator.service.custom.impl;
 import net.kingitsolutions.reportgenerator.dto.request.ReportRequestDto;
 import net.kingitsolutions.reportgenerator.dto.response.ReportResponseDto;
 import net.kingitsolutions.reportgenerator.entity.Report;
+import net.kingitsolutions.reportgenerator.exception.NotFoundException;
 import net.kingitsolutions.reportgenerator.repo.ReportRepository;
 import net.kingitsolutions.reportgenerator.service.ReportService;
 import org.modelmapper.ModelMapper;
@@ -32,17 +33,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public ReportResponseDto getReportStatus(Long reportId) {
+
         Report report = reportRepository.findById(reportId).orElse(null);
-
         if (report == null) {
-            System.out.println("here the no report");
-            return null; // or throw an exception if you prefer
+            throw new NotFoundException("report id not Found ");
         }
-
         ReportResponseDto reportResponseDto =modelMapper.map(report ,ReportResponseDto.class);
-
-         return reportResponseDto;
-
+        return reportResponseDto;
 
     }
 
