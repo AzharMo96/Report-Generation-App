@@ -21,11 +21,4 @@ public class Support {
     }
 
 
-    public static String generateReportContent(ReportResponseDto report) {
-        return String.join("\n",
-                "Start Date: " + report.getStartDate(),
-                "End Date: " + report.getEndDate(),
-                "Random String: " + report.getRandomString());
-    }
-
 }

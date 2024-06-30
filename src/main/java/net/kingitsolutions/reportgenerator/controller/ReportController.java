@@ -3,6 +3,7 @@ package net.kingitsolutions.reportgenerator.controller;
 import net.kingitsolutions.reportgenerator.dto.request.ReportRequestDto;
 import net.kingitsolutions.reportgenerator.dto.response.ReportResponseDto;
 import net.kingitsolutions.reportgenerator.service.ReportService;
+import net.kingitsolutions.reportgenerator.service.custom.impl.ReportServiceImpl;
 import net.kingitsolutions.reportgenerator.service.util.Support;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -34,8 +35,6 @@ public class ReportController {
             LocalDateTime startDate = LocalDateTime.parse(startDateStr, formatter);
             LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
 
-            System.out.println("Start Date: " + startDate);
-            System.out.println("End Date: " + endDate);
             if (startDate == null || endDate == null || !startDate.isBefore(endDate)) {
                 return ResponseEntity.badRequest().build();
             }
@@ -48,7 +47,7 @@ public class ReportController {
             Long id = reportService.initiateReportGeneration(reportDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(id);
         } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body(Long.valueOf("Error parsing date-time: " + e.getMessage()));
+            return ResponseEntity.badRequest().body(Long.valueOf("Error parsing date-time format should be yyyy-MM-dd HH:mm:ss: " + e.getMessage()));
         }
 
     }
@@ -69,8 +68,7 @@ public class ReportController {
         if (report == null || !report.getStatus().equals("finished")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        String content = Support.generateReportContent(report);
-        ByteArrayResource resource = new ByteArrayResource(content.getBytes());
+        ByteArrayResource resource = reportService.generateReportContent(report);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_" + reportId + ".txt");
