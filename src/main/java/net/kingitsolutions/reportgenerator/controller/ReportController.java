@@ -33,9 +33,9 @@ public class ReportController {
         try {
             LocalDateTime startDate = LocalDateTime.parse(startDateStr, formatter);
             LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
+            System.out.print("startDate  "+startDate);
+            System.out.print("endDate "+endDate);
 
-            System.out.println("Start Date: " + startDate);
-            System.out.println("End Date: " + endDate);
             if (startDate == null || endDate == null || !startDate.isBefore(endDate)) {
                 return ResponseEntity.badRequest().build();
             }
@@ -48,7 +48,7 @@ public class ReportController {
             Long id = reportService.initiateReportGeneration(reportDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(id);
         } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body(Long.valueOf("Error parsing date-time: " + e.getMessage()));
+            return ResponseEntity.badRequest().body(Long.valueOf("Error parsing date-time format should be yyyy-MM-dd HH:mm:ss: " + e.getMessage()));
         }
 
     }
