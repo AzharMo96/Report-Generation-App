@@ -1,16 +1,18 @@
-package net.kingitsolutions.reportgenerator.constroller;
+package net.kingitsolutions.reportgenerator.controller;
 
 import net.kingitsolutions.reportgenerator.dto.request.ReportRequestDto;
-import net.kingitsolutions.reportgenerator.entity.Report;
+import net.kingitsolutions.reportgenerator.dto.response.ReportResponseDto;
 import net.kingitsolutions.reportgenerator.service.ReportService;
 import net.kingitsolutions.reportgenerator.service.util.Support;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -44,7 +46,7 @@ public class ReportController {
             reportDto.setRandomString(Support.generateRandomString());
 
             Long id = reportService.initiateReportGeneration(reportDto);
-            return ResponseEntity.ok(id);
+            return ResponseEntity.status(HttpStatus.CREATED).body(id);
         } catch (DateTimeParseException e) {
             return ResponseEntity.badRequest().body(Long.valueOf("Error parsing date-time: " + e.getMessage()));
         }
@@ -53,11 +55,35 @@ public class ReportController {
 
     @GetMapping("/status")
     public ResponseEntity<String> getReportStatus(@Valid @RequestParam("id") Long reportId) {
-        Report report = reportService.getReportStatus(reportId);
+        ReportResponseDto report = reportService.getReportStatus(reportId);
         if (report == null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>("Report not found check the id", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(report.getStatus());
     }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadReport(@RequestParam("id") Long reportId) {
+
+        ReportResponseDto report = reportService.getReportStatus(reportId);
+        if (report == null || !report.getStatus().equals("finished")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        String content = Support.generateReportContent(report);
+        ByteArrayResource resource = new ByteArrayResource(content.getBytes());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_" + reportId + ".txt");
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/plain");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(resource.contentLength())
+                .body(resource);
+
+    }
+
+
+
     
 }
