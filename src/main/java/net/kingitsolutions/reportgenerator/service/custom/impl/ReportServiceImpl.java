@@ -31,8 +31,19 @@ public class ReportServiceImpl implements ReportService {
         return reportResponseDto.getId();
     }
 
-    public Report getReportStatus(Long reportId) {
-        return reportRepository.findById(reportId).orElse(null);
+    public ReportResponseDto getReportStatus(Long reportId) {
+        Report report = reportRepository.findById(reportId).orElse(null);
+
+        if (report == null) {
+            System.out.println("here the no report");
+            return null; // or throw an exception if you prefer
+        }
+
+        ReportResponseDto reportResponseDto =modelMapper.map(report ,ReportResponseDto.class);
+
+         return reportResponseDto;
+
+
     }
 
     private void simulateReportGeneration(Report report) {

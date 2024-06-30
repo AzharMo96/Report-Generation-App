@@ -1,5 +1,6 @@
 package net.kingitsolutions.reportgenerator.service.util;
 
+import net.kingitsolutions.reportgenerator.dto.response.ReportResponseDto;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Random;
@@ -17,6 +18,14 @@ public class Support {
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+
+
+    public static String generateReportContent(ReportResponseDto report) {
+        return String.join("\n",
+                "Start Date: " + report.getStartDate(),
+                "End Date: " + report.getEndDate(),
+                "Random String: " + report.getRandomString());
     }
 
 }
