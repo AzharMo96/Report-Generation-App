@@ -41,7 +41,6 @@ public class ReportServiceImpl implements ReportService {
 
         Report report = reportRepository.findById(reportId).orElse(null);
         if (report == null) {
-//            log.error("report id not Found");
             throw new NotFoundException("report id not Found ");
         }
         ReportResponseDto reportResponseDto =modelMapper.map(report ,ReportResponseDto.class);
