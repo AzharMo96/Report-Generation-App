@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,10 +24,8 @@ public class ReportController {
     private  ReportService reportService;
 
     @PostMapping("/initiate")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Long> initiateReportGeneration(@RequestParam("startDate") String startDateStr,
                                                               @RequestParam("endDate") String endDateStr) {
-
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         try {
@@ -50,9 +49,15 @@ public class ReportController {
             return ResponseEntity.badRequest().body(Long.valueOf("Error parsing date-time: " + e.getMessage()));
         }
 
-
-
-
-
     }
+
+    @GetMapping("/status")
+    public ResponseEntity<String> getReportStatus(@Valid @RequestParam("id") Long reportId) {
+        Report report = reportService.getReportStatus(reportId);
+        if (report == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(report.getStatus());
+    }
+    
 }
